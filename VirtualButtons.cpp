@@ -173,7 +173,7 @@ void VirtualButtons::begin( const char* path, WebServer* server, const uint16_t 
 				String html = HTML;
 				String form = int_inst->getButtonsForm();
 				
-					if( int_inst->display_callback ){
+					if( int_inst->display_callback && int_inst->display_refresh_interval ){
 						String script = "<script type='text/javascript'>";
 						script += "function u(){";
 						script += "const url=new URL(location.href);";
@@ -186,7 +186,7 @@ void VirtualButtons::begin( const char* path, WebServer* server, const uint16_t 
 						script += "}";
 						script += "}\n";
 						script += "r.send();";
-						script += "setTimeout(function(){u();},1000);";
+						script += "setTimeout(function(){u();},"+String(int_inst->display_refresh_interval)+");";
 						script += "} ";
 						script += "u();";		
 						script += "</script>";
@@ -253,6 +253,19 @@ VirtualButton* VirtualButtons::addButton( const char* name, const char* caption,
 	return btn;
 }
 
+VirtualButton* VirtualButtons::getButtonByName( const char* name, const char* group ){
+	String n = group != 0 ? String( group )+"-"+String( name ) : name;
+	
+		for( auto& btn : vector ){
+			
+			if( n == btn->getName() ){
+				return btn;
+			}
+		}
+	
+	return NULL;
+}
+
 void VirtualButtons::createGroup( const char* group, const char* label ){
 	uint8_t i = 0;
 	this->btn_state_update();
@@ -301,8 +314,9 @@ String h = this->header != "" ? "<h2>"+this->header+"</h2>" : "";
 return h+this->Display()+"<form id='btn_form' method='GET' action='click'>"+this->get_btn()+"</form>";	
 }
 
-void VirtualButtons::setDisplay( String(*callback)( void ) ){
+void VirtualButtons::setDisplay( String(*callback)( void ), uint16_t refresh_interval ){
 	this->display_callback = callback;
+	this->display_refresh_interval = refresh_interval;
 }
 
 void VirtualButtons::setHeaderText( const char* str ){

@@ -128,6 +128,7 @@ class VirtualButtons {
 		static VirtualButtons* int_inst;
 		String (*display_callback)( void ) = NULL;
 		bool ext_server_inst = false, res_callback = false;
+		uint16_t display_refresh_interval = 0;
 		VirtualButton* storage_array[10];
 		typedef Vector<VirtualButton*>Buttons;
 		Buttons vector;
@@ -163,11 +164,13 @@ class VirtualButtons {
 		void loop( void );
 		VirtualButton* addButton( const char* name, const char* caption, void(*callback)( void ) );
 		VirtualButton* addButton( const char* name, const char* caption, bool(*callback)( bool ) );
+		VirtualButton* getButtonByName( const char* name, const char* group=0 );
 		void createGroup( const char* group=0, const char* label=0 );
 		String getButtonsForm( void );
-		void setDisplay( String(*callback)( void ) );
+		void setDisplay( String(*callback)( void ), uint16_t refresh_interval=1000 );
 		void setHeaderText( const char* str );
 		void setTitleText( const char* str );
 		String getTitleText( void );
+		
 };
 #endif
